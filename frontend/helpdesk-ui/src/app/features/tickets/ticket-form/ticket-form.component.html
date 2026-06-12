@@ -1,0 +1,90 @@
+<div class="container py-4" style="max-width: 700px">
+  <div class="d-flex align-items-center mb-4">
+    <a routerLink="/tickets" class="btn btn-outline-secondary btn-sm me-3">← Volver</a>
+    <h2 class="mb-0 fw-bold">{{ isEditMode ? '✏️ Editar Ticket' : '➕ Nuevo Ticket' }}</h2>
+  </div>
+
+  <app-spinner *ngIf="loading"></app-spinner>
+  <app-alert *ngIf="errorMessage" [message]="errorMessage" type="danger"></app-alert>
+
+  <div class="card shadow-sm" *ngIf="!loading">
+    <div class="card-body p-4">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Título -->
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">
+            Título <span class="text-danger">*</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            class="form-control"
+            [class.is-invalid]="f['title'].invalid && f['title'].touched"
+            formControlName="title"
+            placeholder="Describe brevemente el problema..."
+          />
+          <div class="invalid-feedback">
+            <span *ngIf="f['title'].errors?.['required']">El título es requerido.</span>
+            <span *ngIf="f['title'].errors?.['minlength']">Mínimo 5 caracteres.</span>
+            <span *ngIf="f['title'].errors?.['maxlength']">Máximo 120 caracteres.</span>
+          </div>
+          <small class="text-muted">{{ f['title'].value?.length ?? 0 }}/120</small>
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label for="description" class="form-label fw-semibold">
+            Descripción <span class="text-danger">*</span>
+          </label>
+          <textarea
+            id="description"
+            class="form-control"
+            rows="5"
+            [class.is-invalid]="f['description'].invalid && f['description'].touched"
+            formControlName="description"
+            placeholder="Detalla el problema, pasos para reproducirlo, impacto..."
+          ></textarea>
+          <div class="invalid-feedback">
+            <span *ngIf="f['description'].errors?.['required']">La descripción es requerida.</span>
+            <span *ngIf="f['description'].errors?.['minlength']">Mínimo 10 caracteres.</span>
+            <span *ngIf="f['description'].errors?.['maxlength']">Máximo 2000 caracteres.</span>
+          </div>
+          <small class="text-muted">{{ f['description'].value?.length ?? 0 }}/2000</small>
+        </div>
+
+        <!-- Prioridad -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Prioridad <span class="text-danger">*</span></label>
+          <div class="d-flex gap-3 flex-wrap">
+            <div *ngFor="let p of priorityOptions" class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                [id]="'priority-' + p.value"
+                [value]="p.value"
+                formControlName="priority"
+              />
+              <label class="form-check-label" [for]="'priority-' + p.value">
+                {{ p.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex gap-2 justify-content-end">
+          <a routerLink="/tickets" class="btn btn-outline-secondary">Cancelar</a>
+          <button
+            type="submit"
+            class="btn btn-primary px-4"
+            [disabled]="submitting"
+          >
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isEditMode ? 'Guardar cambios' : 'Crear ticket' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

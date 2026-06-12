@@ -1,0 +1,116 @@
+<div class="container py-4" style="max-width: 860px">
+
+  <div class="d-flex align-items-center mb-4">
+    <a routerLink="/tickets" class="btn btn-outline-secondary btn-sm me-3">← Volver</a>
+    <h2 class="mb-0 fw-bold">Detalle del Ticket</h2>
+  </div>
+
+  <app-spinner *ngIf="loading"></app-spinner>
+  <app-alert *ngIf="errorMessage" [message]="errorMessage" type="danger"></app-alert>
+  <app-alert *ngIf="successMessage" [message]="successMessage" type="success"></app-alert>
+
+  <ng-container *ngIf="ticket && !loading">
+
+    <!-- Info principal -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-start">
+        <div>
+          <h4 class="mb-1 fw-bold">{{ ticket.title }}</h4>
+          <small class="text-muted">#{{ ticket.id }} · Creado por {{ ticket.createdBy }} · {{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+        </div>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+          <app-status-badge [priority]="ticket.priority"></app-status-badge>
+          <app-status-badge [status]="ticket.status"></app-status-badge>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="mb-3" style="white-space: pre-wrap">{{ ticket.description }}</p>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <!-- Botón cambiar estado -->
+          <button
+            *ngIf="nextStatus !== null"
+            class="btn btn-success btn-sm"
+            [disabled]="changingStatus"
+            (click)="changeStatus()"
+          >
+            <span *ngIf="changingStatus" class="spinner-border spinner-border-sm me-1"></span>
+            Mover a: <strong>{{ nextStatusLabel }}</strong>
+          </button>
+          <span *ngIf="nextStatus === null" class="badge bg-secondary align-self-center">
+            Ticket cerrado
+          </span>
+
+          <!-- Botón editar -->
+          <a
+            *ngIf="ticket.status !== TicketStatus.Closed"
+            [routerLink]="['/tickets', ticket.id, 'edit']"
+            class="btn btn-outline-primary btn-sm"
+          >
+            ✏️ Editar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comentarios -->
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="mb-0">💬 Comentarios ({{ ticket.comments.length }})</h5>
+      </div>
+      <div class="card-body">
+
+        <!-- Lista de comentarios -->
+        <div *ngIf="ticket.comments.length === 0" class="text-muted text-center py-3">
+          Aún no hay comentarios.
+        </div>
+
+        <div
+          *ngFor="let c of ticket.comments"
+          class="d-flex gap-3 mb-3 pb-3 border-bottom"
+        >
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:38px;height:38px;font-size:14px">
+            {{ c.createdBy[0]?.toUpperCase() }}
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between">
+              <strong>{{ c.createdBy }}</strong>
+              <small class="text-muted">{{ c.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+            <p class="mb-0 mt-1" style="white-space: pre-wrap">{{ c.text }}</p>
+          </div>
+        </div>
+
+        <!-- Agregar comentario -->
+        <div class="mt-3" *ngIf="ticket.status !== TicketStatus.Closed">
+          <h6 class="fw-semibold">Agregar comentario</h6>
+          <form [formGroup]="commentForm" (ngSubmit)="submitComment()" novalidate>
+            <div class="mb-2">
+              <textarea
+                class="form-control"
+                rows="3"
+                formControlName="text"
+                placeholder="Escribe tu comentario..."
+                [class.is-invalid]="commentForm.controls['text'].invalid && commentForm.controls['text'].touched"
+              ></textarea>
+              <div class="invalid-feedback">
+                <span *ngIf="commentForm.controls['text'].errors?.['required']">El comentario es requerido.</span>
+                <span *ngIf="commentForm.controls['text'].errors?.['minlength']">Mínimo 2 caracteres.</span>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="addingComment">
+              <span *ngIf="addingComment" class="spinner-border spinner-border-sm me-1"></span>
+              Publicar comentario
+            </button>
+          </form>
+        </div>
+
+        <div *ngIf="ticket.status === TicketStatus.Closed" class="alert alert-secondary mt-3 mb-0">
+          Este ticket está cerrado. No se pueden agregar más comentarios.
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

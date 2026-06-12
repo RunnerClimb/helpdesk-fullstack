@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Stop-Job -Name \"helpdeskapi\" -ErrorAction SilentlyContinue; Remove-Job -Name \"helpdeskapi\" -Force -ErrorAction SilentlyContinue; try { Invoke-WebRequest -Uri \"https://localhost:7247/swagger/v1/swagger.json\" -UseBasicParsing -TimeoutSec 5 | Select-Object StatusCode, @{n='Length';e={$_.Content.Length}} } catch { \"Error: $\\($_.Exception.Message\\)\" })"
+    ]
+  }
+}

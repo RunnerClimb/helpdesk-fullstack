@@ -1,0 +1,12 @@
+<nav class="navbar navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold" routerLink="/tickets">🎫 HelpDesk</a>
+  <div class="d-flex gap-2">
+    <a routerLink="/tickets" class="btn btn-outline-light btn-sm">Tickets</a>
+    <a routerLink="/tickets/new" class="btn btn-primary btn-sm">+ Nuevo</a>
+  </div>
+</nav>
+<router-outlet></router-outlet>
+
+<footer class="text-center text-muted py-3 mt-4 border-top small">
+  © {{ currentYear }} Desarrollado por <strong>Pablo Araneda</strong> · Full Stack Developer
+</footer>

@@ -1,0 +1,128 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0 fw-bold">🎫 Tickets de Soporte</h1>
+      <small class="text-muted">{{ total }} ticket(s) encontrado(s)</small>
+    </div>
+    <a routerLink="/tickets/new" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Nuevo Ticket
+    </a>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">Buscar</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar en título o descripción..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="onSearch($event)"
+          />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Estado</label>
+          <select class="form-select" (change)="onStatusChange($any($event.target).value)">
+            <option value="">Todos los estados</option>
+            <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Prioridad</label>
+          <select class="form-select" (change)="onPriorityChange($any($event.target).value)">
+            <option value="">Todas las prioridades</option>
+            <option *ngFor="let p of priorityOptions" [value]="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de carga / error -->
+  <app-spinner *ngIf="loading"></app-spinner>
+  <app-alert *ngIf="errorMessage" [message]="errorMessage" type="danger"></app-alert>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading && !errorMessage">
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Título</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Creado por</th>
+              <th>Fecha</th>
+              <th>Comentarios</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="tickets.length === 0">
+              <td colspan="8" class="text-center text-muted py-4">
+                No se encontraron tickets con los filtros seleccionados.
+              </td>
+            </tr>
+            <tr
+              *ngFor="let ticket of tickets"
+              class="cursor-pointer"
+              (click)="goToDetail(ticket.id)"
+              style="cursor:pointer"
+            >
+              <td><span class="text-muted">#{{ ticket.id }}</span></td>
+              <td><strong>{{ ticket.title }}</strong></td>
+              <td>
+                <app-status-badge [priority]="ticket.priority"></app-status-badge>
+              </td>
+              <td>
+                <app-status-badge [status]="ticket.status"></app-status-badge>
+              </td>
+              <td>{{ ticket.createdBy }}</td>
+              <td>{{ ticket.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <span class="badge bg-light text-dark border">
+                  💬 {{ ticket.commentsCount }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" (click)="$event.stopPropagation(); goToDetail(ticket.id)">
+                  Ver
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+      <span class="text-muted small">
+        Página {{ filters.page }} de {{ totalPages }}
+      </span>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="filters.page === 1">
+            <button class="page-link" (click)="goToPage(filters.page - 1)">‹ Anterior</button>
+          </li>
+          <li
+            *ngFor="let p of [].constructor(totalPages); let i = index"
+            class="page-item"
+            [class.active]="filters.page === i + 1"
+          >
+            <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="filters.page === totalPages">
+            <button class="page-link" (click)="goToPage(filters.page + 1)">Siguiente ›</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

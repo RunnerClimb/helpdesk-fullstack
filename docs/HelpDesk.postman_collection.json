@@ -1,0 +1,116 @@
+{
+  "info": {
+    "name": "HelpDesk API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" }
+  ],
+  "item": [
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Get All Tickets",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User", "value": "1" }],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "10" },
+                { "key": "status", "value": "Open", "disabled": true },
+                { "key": "priority", "value": "High", "disabled": true },
+                { "key": "q", "value": "login", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User", "value": "1" }],
+            "url": { "raw": "{{baseUrl}}/tickets/1", "host": ["{{baseUrl}}"], "path": ["tickets", "1"] }
+          }
+        },
+        {
+          "name": "Create Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"No funciona la impresora\",\n  \"description\": \"La impresora del piso 3 no responde desde ayer\",\n  \"priority\": \"Medium\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets", "host": ["{{baseUrl}}"], "path": ["tickets"] }
+          }
+        },
+        {
+          "name": "Update Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"No funciona la impresora (actualizado)\",\n  \"description\": \"La impresora del piso 3 no responde desde ayer, ya se reinició\",\n  \"priority\": \"High\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets/1", "host": ["{{baseUrl}}"], "path": ["tickets", "1"] }
+          }
+        },
+        {
+          "name": "Change Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"InProgress\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets/1/status", "host": ["{{baseUrl}}"], "path": ["tickets", "1", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User", "value": "1" }],
+            "url": { "raw": "{{baseUrl}}/tickets/1/comments", "host": ["{{baseUrl}}"], "path": ["tickets", "1", "comments"] }
+          }
+        },
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User", "value": "1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Revisando con el proveedor de la impresora\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets/1/comments", "host": ["{{baseUrl}}"], "path": ["tickets", "1", "comments"] }
+          }
+        }
+      ]
+    }
+  ]
+}
